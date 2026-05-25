@@ -11,6 +11,7 @@ Portable Anwendung zum parallelen Öffnen und Anordnen zweier Browserfenster (An
 - `docs/KURZDOKUMENTATION.txt`
 - `docs/DOKUMENTATION_ANWENDER.md`
 - `docs/DOKUMENTATION_TECHNIK.md`
+- `docs/RELEASE_PROZESS.md`
 - `release/RELEASE_NOTES_v1.0.1.md`
 
 ## Release-Publishing

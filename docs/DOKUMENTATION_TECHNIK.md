@@ -25,6 +25,7 @@ Veröffentlichung auf GitHub erfolgt über `src/publish_release_core.ps1`.
 
 - Standard: Build, Commit (falls Änderungen), Push, Tag, GitHub-Release.
 - Optional: `-SkipBuild`, `-Version vX.Y.Z`, `-Draft`, `-PreRelease`.
+- Detaillierte Checkliste: `docs/RELEASE_PROZESS.md`.
 
 Vor dem eigentlichen Build prüft das Skript verbindlich:
 
