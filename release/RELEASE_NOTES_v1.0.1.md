@@ -1,0 +1,19 @@
+# Release Notes v1.0.1
+
+## Änderungen
+
+- Build-/Setup-/Spec-/Startskript wurden in `src/` zentralisiert.
+- Verbliebene TXT-Dateien wurden nach `src/` verschoben:
+  - `src/requirements.txt`
+  - `src/version_info.txt`
+  - `src/build_version_info.txt`
+- Pfadlogik in `src/setup.ps1` und `src/AP1-Begleiter-Portable.spec` auf neue Struktur angepasst.
+- Versionsstand auf `v1.0.1` angehoben (inkl. EXE-Metadaten `1.0.1`).
+
+## Ergebnis
+
+- Build über `src/build.ps1` erfolgreich.
+- Release-Artefakte erstellt:
+  - `dist/AP1-Begleiter-Portable.exe`
+  - `release/AP1-Begleiter-Portable/`
+  - `release/AP1-Begleiter-Portable.zip`

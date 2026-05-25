@@ -1,0 +1,19 @@
+Kurzdokumentation - AP1-Begleiter-Portable
+
+Zweck
+Der AP 1-Begleiter-Portable richtet auf Ihrem Haupt-Bildschirm zwei Browser-Fenster ein.
+Auf der linken Seite finden Sie den AP 1-Begleiter-Portable, während Sie sich auf der rechten
+Seite am Intranet-Portal der Kaufleute anmelden können. Auf diese Weise können Sie
+jeweils auf der rechten Seite die links im AP 1-Begleiter-Portable beschriebenen Schritte nachvollziehen.
+
+Nutzung
+- Linke Bildschirmhälfte:  AP 1-Begleiter-Portable
+- Rechte Bildschirmhälfte: Intranet-Portal der Kaufleute (Anmeldung erforderlich)
+
+Vorteil
+Sie können die im AP 1-Begleiter-Portable links beschriebenen Schritte direkt rechts im Intranet
+nachvollziehen und ausführen, ohne zwischen Fenstern wechseln zu müssen.
+
+Schaltflächen
+- Starten:        Öffnet beide Browser-Fenster und richtet sie nebeneinander ein
+- Dokumentation:  Zeigt diese Kurzdokumentation an

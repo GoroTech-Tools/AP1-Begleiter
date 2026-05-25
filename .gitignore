@@ -1,0 +1,27 @@
+# Python / PyInstaller
+.venv/
+__pycache__/
+*.py[cod]
+dist/
+build/
+*.spec.bak
+
+# PyInstaller-Artefakte
+*.manifest
+
+# Release
+release/*.exe
+release/*.zip
+release/**
+!release/
+!release/RELEASE_NOTES_*.md
+
+# Einstellungen (werden zur Laufzeit in %APPDATA% gespeichert, nicht im Repo)
+settings.json
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+desktop.ini
