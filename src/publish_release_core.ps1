@@ -133,8 +133,20 @@ else {
 }
 
 Write-Host "4b. Tag pushen ..." -ForegroundColor Cyan
-git push origin $versionTag
-Assert-LastExitCode -ErrorMessage "Tag-Push fehlgeschlagen."
+$remoteTagExists = $false
+git ls-remote --tags origin ("refs/tags/{0}" -f $versionTag) *> $null
+if ($LASTEXITCODE -eq 0) {
+    $remoteTagLine = git ls-remote --tags origin ("refs/tags/{0}" -f $versionTag)
+    $remoteTagExists = -not [string]::IsNullOrWhiteSpace($remoteTagLine)
+}
+
+if ($remoteTagExists) {
+    Write-Host "4b. Tag existiert bereits auf origin und wird nicht erneut gepusht: $versionTag" -ForegroundColor Yellow
+}
+else {
+    git push origin $versionTag
+    Assert-LastExitCode -ErrorMessage "Tag-Push fehlgeschlagen."
+}
 
 # --- GitHub Release erstellen/aktualisieren ---
 gh release view $versionTag --json tagName *> $null
