@@ -1,19 +1,29 @@
 Kurzdokumentation - AP1-Begleiter-Portable
 
 Zweck
-Der AP 1-Begleiter-Portable richtet auf Ihrem Haupt-Bildschirm zwei Browser-Fenster ein.
-Auf der linken Seite finden Sie den AP 1-Begleiter-Portable, während Sie sich auf der rechten
+Der AP1-Begleiter-Portable richtet auf Ihrem Haupt-Bildschirm zwei Browser-Fenster ein.
+Auf der linken Seite finden Sie den Kurs AP1-Begleiter, während Sie sich auf der rechten
 Seite am Intranet-Portal der Kaufleute anmelden können. Auf diese Weise können Sie
-jeweils auf der rechten Seite die links im AP 1-Begleiter-Portable beschriebenen Schritte nachvollziehen.
+jeweils auf der rechten Seite die links im Kurs AP1-Begleiter beschriebenen Schritte nachvollziehen.
 
 Nutzung
-- Linke Bildschirmhälfte:  AP 1-Begleiter-Portable
+- Linke Bildschirmhälfte:  Kurs AP1-Begleiter
 - Rechte Bildschirmhälfte: Intranet-Portal der Kaufleute (Anmeldung erforderlich)
 
 Vorteil
-Sie können die im AP 1-Begleiter-Portable links beschriebenen Schritte direkt rechts im Intranet
+Sie können die im Kurs AP1-Begleiter links beschriebenen Schritte direkt rechts im Intranet
 nachvollziehen und ausführen, ohne zwischen Fenstern wechseln zu müssen.
 
 Schaltflächen
 - Starten:        Öffnet beide Browser-Fenster und richtet sie nebeneinander ein
 - Dokumentation:  Zeigt diese Kurzdokumentation an
+
+Voraussetzungen
+- Internetverbindung ist aktiv.
+- Zugang zum Intranet-Portal der Kaufleute ist vorhanden (Anmeldung erforderlich).
+- Für die automatische Anordnung wird Microsoft Edge empfohlen.
+
+Fehlersuche
+- Wenn Edge nicht gefunden wird, werden die Links im Standardbrowser geöffnet.
+- Wenn keine automatische Fensteranordnung erfolgt, Edge manuell starten und erneut auf "Starten" klicken.
+- Wenn Anmeldeprobleme im Intranet auftreten, Zugangsdaten und Netzwerkverbindung prüfen.

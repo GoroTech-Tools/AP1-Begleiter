@@ -16,6 +16,7 @@ Portable Anwendung zum parallelen Öffnen und Anordnen zweier Browserfenster (An
 ## Release-Publishing
 
 - Für Build + GitHub-Release in einem Lauf: `src/publish_release.ps1`
+- Technische Kernroutine: `src/publish_release_core.ps1`
 
 ## Markdown-Regel (verbindlich)
 

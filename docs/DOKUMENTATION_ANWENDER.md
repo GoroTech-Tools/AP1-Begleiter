@@ -16,7 +16,18 @@
 - Ordnet die Fenster auf dem Hauptbildschirm an.
 - Öffnet die Kurzdokumentation über den Button **Dokumentation**.
 
-## Hinweise
+## Voraussetzungen
+
+- Internetverbindung ist aktiv.
+- Zugang zum Intranet-Portal der Kaufleute ist vorhanden (Anmeldung erforderlich).
+- Für die automatische Anordnung wird Microsoft Edge empfohlen.
+
+## Fehlersuche
 
 - Wenn Microsoft Edge nicht gefunden wird, werden Links im Standardbrowser geöffnet.
+- Wenn keine automatische Fensteranordnung erfolgt, Edge manuell starten und erneut auf **Starten** klicken.
+- Wenn Anmeldeprobleme im Intranet auftreten, Zugangsdaten und Netzwerkverbindung prüfen.
+
+## Hinweise
+
 - Einstellungen werden unter `%APPDATA%\AP1-Begleiter-Portable` gespeichert.
