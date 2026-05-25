@@ -13,6 +13,10 @@ Portable Anwendung zum parallelen Öffnen und Anordnen zweier Browserfenster (An
 - `docs/DOKUMENTATION_TECHNIK.md`
 - `release/RELEASE_NOTES_v1.0.1.md`
 
+## Release-Publishing
+
+- Für Build + GitHub-Release in einem Lauf: `src/publish_release.ps1`
+
 ## Markdown-Regel (verbindlich)
 
 Um MD022/MD032 dauerhaft zu vermeiden, gilt in diesem Projekt:

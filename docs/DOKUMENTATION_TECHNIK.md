@@ -6,6 +6,7 @@
 - `src/AP1-Begleiter-Portable-starten.ps1`: GUI-Logik und Browser-/Fenstersteuerung.
 - `src/AP1-Begleiter-Portable.spec`: PyInstaller-Konfiguration.
 - `src/build.ps1`: Build- und Release-Automatisierung.
+- `src/publish_release.ps1`: Build + Commit + Push + Tag + GitHub-Release in einem Lauf.
 - `src/setup.ps1`: venv-Setup und Abhängigkeitsinstallation.
 - `src/version_info.txt`: sichtbare App-Version (z. B. `v1.0.0`).
 - `src/build_version_info.txt`: Windows-Dateiversionsinformationen für die EXE.
@@ -19,6 +20,11 @@ Der Build erfolgt über `src/build.ps1` und erzeugt:
 - `release/AP1-Begleiter-Portable_vX.Y.Z/`
 - `release/AP1-Begleiter-Portable_vX.Y.Z.zip`
 - `release/RELEASE_NOTES_vX.Y.Z.md` wird (falls vorhanden) ins Release-Paket kopiert.
+
+Veröffentlichung auf GitHub erfolgt über `src/publish_release.ps1`.
+
+- Standard: Build, Commit (falls Änderungen), Push, Tag, GitHub-Release.
+- Optional: `-SkipBuild`, `-Version vX.Y.Z`, `-Draft`, `-PreRelease`.
 
 Vor dem eigentlichen Build prüft das Skript verbindlich:
 
