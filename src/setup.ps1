@@ -20,7 +20,7 @@ if ($Force -and (Test-Path ".\$VenvName")) {
 
 if (-not (Test-Path ".\$VenvName")) {
     Write-Host "[$repo] Erstelle $VenvName ..." -ForegroundColor Cyan
-    py -m venv $VenvName
+    py -3.13 -m venv $VenvName
 } else {
     Write-Host "[$repo] $VenvName bereits vorhanden." -ForegroundColor DarkGray
 }
