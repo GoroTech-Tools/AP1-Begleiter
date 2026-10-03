@@ -1,5 +1,10 @@
 # Release Notes v1.0.0
 
+## Download
+
+- [Release-Seite v1.0.0](https://github.com/GoroTech-Tools/AP1-Begleiter/releases/tag/v1.0.0)
+- [ZIP direkt herunterladen](https://github.com/GoroTech-Tools/AP1-Begleiter/releases/download/v1.0.0/AP1-Begleiter-Portable_v1.0.0.zip)
+
 ## Enthalten
 
 - Projektname vereinheitlicht auf `AP1-Begleiter-Portable`.
