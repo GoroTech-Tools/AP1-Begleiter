@@ -7,6 +7,7 @@
 - `src/AP1-Begleiter-Portable.spec`: PyInstaller-Konfiguration.
 - `src/build.ps1`: Build- und Release-Automatisierung.
 - `src/publish_release_core.ps1`: Build + Commit + Push + Tag + GitHub-Release in einem Lauf.
+- `.github/workflows/release.yml`: aktualisiert Versionsangaben, erstellt das Build-Artefakt und veröffentlicht neue Tags als GitHub-Release.
 - `src/setup.ps1`: venv-Setup und Abhängigkeitsinstallation.
 - `src/version_info.txt`: sichtbare App-Version (z. B. `v1.0.0`).
 - `src/build_version_info.txt`: Windows-Dateiversionsinformationen für die EXE.
