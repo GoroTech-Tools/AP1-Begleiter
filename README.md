@@ -1,4 +1,4 @@
-# AP1-Begleiter-Portable
+# AP1-Begleiter
 
 Version: `v1.0.1`
 
