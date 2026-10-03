@@ -231,7 +231,8 @@ jobs:
           )
           if ($env:TAG_RELEASE -eq 'True') {
             $releaseNotesPath = "release/RELEASE_NOTES_$tag.md"
-            Copy-Item "release-notes/RELEASE_NOTES_$tag.md" $releaseNotesPath -Force
+            New-Item -ItemType Directory -Path "release" -Force | Out-Null
+            Copy-Item "release-notes/RELEASE_NOTES_$tag.md" $releaseNotesPath -Force -ErrorAction Stop
             $filesToCommit += $releaseNotesPath
           }
 
