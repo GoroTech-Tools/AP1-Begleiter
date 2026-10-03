@@ -1,5 +1,10 @@
 # Release Notes v1.0.1
 
+## Download
+
+- [Release-Seite v1.0.1](https://github.com/GoroTech-Tools/AP1-Begleiter/releases/tag/v1.0.1)
+- [ZIP direkt herunterladen](https://github.com/GoroTech-Tools/AP1-Begleiter/releases/download/v1.0.1/AP1-Begleiter-Portable_v1.0.1.zip)
+
 ## Änderungen
 
 - Build-/Setup-/Spec-/Startskript wurden in `src/` zentralisiert.
