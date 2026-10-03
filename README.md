@@ -18,7 +18,9 @@ Portable Anwendung zum parallelen Öffnen und Anordnen zweier Browserfenster (An
 
 - Für Build + GitHub-Release in einem Lauf: `src/publish_release.ps1`
 - Technische Kernroutine: `src/publish_release_core.ps1`
-- Neue `vX.Y.Z`-Tags starten automatisch den Workflow `.github/workflows/release.yml`.
+- Pushes nach `main` erstellen automatisch ein Release mit erhöhter Patch-Version.
+- `vX.Y.Z`-Tags veröffentlichen die zugehörigen Release Notes; Pull Requests prüfen den Build.
+- Der Workflow `.github/workflows/release.yml` kann außerdem manuell gestartet werden.
 
 ## Markdown-Regel (verbindlich)
 
