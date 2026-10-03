@@ -8,35 +8,33 @@
 
 ## Release-Checkliste
 
-1. Versionsstand prüfen:
-   - `src/version_info.txt`
-   - `src/build_version_info.txt`
-2. Dokumentation prüfen:
+1. Dokumentation prüfen:
    - `README.md` im Projektwurzelverzeichnis
    - `docs/DOKUMENTATION_ANWENDER.md`
    - `docs/DOKUMENTATION_TECHNIK.md`
    - `docs/KURZDOKUMENTATION.txt`
-3. Build ausführen (`src/build.ps1`).
+2. Für ein versioniertes Release Release Notes bereitstellen:
+   - `release/RELEASE_NOTES_vX.Y.Z.md`
+   - Bei Tag-Releases ergänzt der Workflow den Download-Bereich.
+3. Für lokale Builds `src/build.ps1` ausführen.
 4. Artefakte kurz validieren:
    - `dist/AP1-Begleiter-Portable_vX.Y.Z.exe`
    - `release/AP1-Begleiter-Portable_vX.Y.Z/`
    - `release/AP1-Begleiter-Portable_vX.Y.Z.zip`
-5. Release Notes bereitstellen:
-   - `release/RELEASE_NOTES_vX.Y.Z.md` (der Workflow ergänzt den Download-Bereich)
-6. Veröffentlichung ausführen:
-   - `src/publish_release.ps1`
-7. GitHub prüfen:
+5. Für eine lokale Veröffentlichung `src/publish_release.ps1` verwenden.
+6. GitHub prüfen:
    - Tag sichtbar (`vX.Y.Z`)
    - Release vorhanden
    - ZIP-Asset vorhanden
 
-## Standardablauf (empfohlen)
+## Automatisierter Ablauf
 
-1. Versionsstand, Dokumentation und Release Notes vorbereiten.
-2. Einen Tag im Format `vX.Y.Z` pushen.
-3. Der Workflow `.github/workflows/release.yml` aktualisiert die Versionsangaben, baut das Paket und veröffentlicht das GitHub-Release als `latest`.
-4. Die Release Notes enthalten die Release-Seite und einen direkten Link auf das ZIP-Artefakt.
-5. Ergebnis und ZIP-Artefakt in GitHub Releases prüfen.
+1. Ein Push nach `main` startet den Windows-Build. Der Workflow erhöht die Patch-Version anhand der höchsten vorhandenen Versionsnummer, aktualisiert die Versionsreferenzen und Dokumentation, erstellt das Paket und veröffentlicht ein GitHub-Release als `latest`.
+2. Ein Push eines Tags im Format `vX.Y.Z` startet denselben Build mit der Tag-Version. Dafür müssen passende Release Notes vorhanden sein; der Workflow ergänzt den Download-Bereich und veröffentlicht die Notizen samt ZIP als `latest`.
+3. Pull Requests gegen `main` führen den Build zur Validierung aus, veröffentlichen aber kein Release.
+4. Der Workflow kann außerdem über GitHub Actions manuell gestartet werden. Ein Lauf auf `main` veröffentlicht ein Release.
+5. Der Build und das Release-Publishing laufen in getrennten Jobs. Das ZIP und bei Tag-Releases die Release Notes werden zwischen den Jobs als Actions-Artefakte übertragen.
+6. Versionsangaben in `src/version_info.txt`, `src/build_version_info.txt`, `src/main.py`, `src/AP1-Begleiter-Portable-starten.ps1`, `README.md` und `docs/DOKUMENTATION_TECHNIK.md` werden aktualisiert und nach `main` übertragen.
 
 Für lokale Veröffentlichungen kann weiterhin `src/publish_release.ps1` verwendet werden.
 
