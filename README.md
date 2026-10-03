@@ -1,6 +1,6 @@
 # AP1-Begleiter
 
-Version: `v1.0.1`
+Version: `v1.0.3`
 
 ## Kurzüberblick
 
@@ -28,3 +28,4 @@ Um MD022/MD032 dauerhaft zu vermeiden, gilt in diesem Projekt:
 
 - Vor **und** nach jeder Überschrift (`#`, `##`, ...) steht genau eine Leerzeile.
 - Listen (`-`, `1.`) werden immer von Leerzeilen umgeben.
+

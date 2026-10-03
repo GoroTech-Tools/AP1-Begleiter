@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 
-DEFAULT_APP_VERSION = "v1.0.1"
+DEFAULT_APP_VERSION = "v1.0.3"
 
 
 def get_base_dir() -> str:
@@ -81,3 +81,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

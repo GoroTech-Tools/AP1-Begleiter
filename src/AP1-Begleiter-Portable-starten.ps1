@@ -45,7 +45,7 @@ $script:DefaultProfiles = [ordered]@{
 }
 
 if (-not $script:AppVersion -or [string]::IsNullOrWhiteSpace([string]$script:AppVersion)) {
-    $script:AppVersion = "v1.0.1"
+    $script:AppVersion = "v1.0.3"
 }
 
 function Get-SettingsPath {
@@ -662,5 +662,6 @@ $btnClose.Add_Click({
 })
 
 [void]$form.ShowDialog()
+
 
 
