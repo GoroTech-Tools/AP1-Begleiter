@@ -51,6 +51,30 @@ jobs:
           $technicalDocs = $technicalDocs -replace '(?m)^- Aktueller Stand: `v\d+\.\d+\.\d+`\.$', "- Aktueller Stand: ``$tag``."
           Set-Content docs/DOKUMENTATION_TECHNIK.md $technicalDocs -Encoding utf8NoBOM
 
+          $releaseNotesPath = "release/RELEASE_NOTES_$tag.md"
+          if (-not (Test-Path -LiteralPath $releaseNotesPath -PathType Leaf)) {
+            throw "Release Notes nicht gefunden: $releaseNotesPath"
+          }
+          $releaseNotes = Get-Content $releaseNotesPath -Raw
+          $downloadSection = @"
+          ## Download
+
+          - [Release-Seite $tag](https://github.com/GoroTech-Tools/AP1-Begleiter/releases/tag/$tag)
+          - [ZIP direkt herunterladen](https://github.com/GoroTech-Tools/AP1-Begleiter/releases/download/$tag/AP1-Begleiter-Portable_$tag.zip)
+          "@
+          if ($releaseNotes -match '(?m)^## Download\s*$') {
+            $releaseNotes = [regex]::Replace($releaseNotes, '(?ms)^## Download\r?\n.*?(?=^## |\z)', "$downloadSection`n`n")
+          }
+          else {
+            $title = [regex]::Match($releaseNotes, '(?m)^# .+$')
+            if (-not $title.Success) {
+              throw "Release Notes enthalten keine Markdown-Überschrift: $releaseNotesPath"
+            }
+            $remainingNotes = $releaseNotes.Substring($title.Index + $title.Length).TrimStart("`r", "`n")
+            $releaseNotes = $releaseNotes.Substring(0, $title.Index + $title.Length) + "`n`n$downloadSection`n`n" + $remainingNotes
+          }
+          Set-Content $releaseNotesPath $releaseNotes.TrimEnd() -Encoding utf8NoBOM
+
           $main = Get-Content src/main.py -Raw
           $main = $main -replace 'DEFAULT_APP_VERSION = "v\d+\.\d+\.\d+"', "DEFAULT_APP_VERSION = `"$tag`""
           Set-Content src/main.py $main -Encoding utf8NoBOM
@@ -61,7 +85,7 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md docs/DOKUMENTATION_TECHNIK.md src/version_info.txt src/build_version_info.txt src/main.py src/AP1-Begleiter-Portable-starten.ps1
+          git add README.md docs/DOKUMENTATION_TECHNIK.md release/RELEASE_NOTES_$tag.md src/version_info.txt src/build_version_info.txt src/main.py src/AP1-Begleiter-Portable-starten.ps1
           git diff --cached --quiet
           if ($LASTEXITCODE -ne 0) {
             git commit -m "Update documentation for $tag"
@@ -84,6 +108,7 @@ jobs:
           name: AP1-Begleiter ${{ github.ref_name }}
           files: release/AP1-Begleiter-Portable_${{ github.ref_name }}.zip
           fail_on_unmatched_files: true
-          generate_release_notes: true
+          body_path: release/RELEASE_NOTES_${{ github.ref_name }}.md
+          generate_release_notes: false
           make_latest: true
           overwrite_files: true

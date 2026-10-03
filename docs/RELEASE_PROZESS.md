@@ -22,7 +22,7 @@
    - `release/AP1-Begleiter-Portable_vX.Y.Z/`
    - `release/AP1-Begleiter-Portable_vX.Y.Z.zip`
 5. Release Notes bereitstellen:
-   - `release/RELEASE_NOTES_vX.Y.Z.md`
+   - `release/RELEASE_NOTES_vX.Y.Z.md` (der Workflow ergänzt den Download-Bereich)
 6. Veröffentlichung ausführen:
    - `src/publish_release.ps1`
 7. GitHub prüfen:
@@ -35,7 +35,8 @@
 1. Versionsstand, Dokumentation und Release Notes vorbereiten.
 2. Einen Tag im Format `vX.Y.Z` pushen.
 3. Der Workflow `.github/workflows/release.yml` aktualisiert die Versionsangaben, baut das Paket und veröffentlicht das GitHub-Release als `latest`.
-4. Ergebnis und ZIP-Artefakt in GitHub Releases prüfen.
+4. Die Release Notes enthalten die Release-Seite und einen direkten Link auf das ZIP-Artefakt.
+5. Ergebnis und ZIP-Artefakt in GitHub Releases prüfen.
 
 Für lokale Veröffentlichungen kann weiterhin `src/publish_release.ps1` verwendet werden.
 
