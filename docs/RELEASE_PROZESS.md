@@ -32,10 +32,12 @@
 
 ## Standardablauf (empfohlen)
 
-1. Lokal vorbereiten (Version + Doku).
-2. Veröffentlichung mit einem Befehl starten:
-   - `src/publish_release.ps1`
-3. Ergebnis in GitHub Releases prüfen.
+1. Versionsstand, Dokumentation und Release Notes vorbereiten.
+2. Einen Tag im Format `vX.Y.Z` pushen.
+3. Der Workflow `.github/workflows/release.yml` aktualisiert die Versionsangaben, baut das Paket und veröffentlicht das GitHub-Release als `latest`.
+4. Ergebnis und ZIP-Artefakt in GitHub Releases prüfen.
+
+Für lokale Veröffentlichungen kann weiterhin `src/publish_release.ps1` verwendet werden.
 
 ## Hinweise
 

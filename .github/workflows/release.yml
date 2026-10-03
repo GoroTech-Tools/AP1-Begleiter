@@ -1,0 +1,89 @@
+name: Build and release AP1-Begleiter
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish release
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Update version references and documentation
+        shell: pwsh
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          if ($tag -notmatch '^v(\d+)\.(\d+)\.(\d+)$') {
+            throw "Ungültiger Release-Tag: $tag"
+          }
+          $version = "$($Matches[1]).$($Matches[2]).$($Matches[3])"
+          $versionTuple = "$($Matches[1]), $($Matches[2]), $($Matches[3]), 0"
+
+          Set-Content src/version_info.txt $tag -Encoding utf8NoBOM
+
+          $metadata = Get-Content src/build_version_info.txt -Raw
+          $metadata = $metadata -replace 'filevers=\([^)]+\)', "filevers=($versionTuple)"
+          $metadata = $metadata -replace 'prodvers=\([^)]+\)', "prodvers=($versionTuple)"
+          $metadata = $metadata -replace "StringStruct\('FileVersion', '[^']+'\)", "StringStruct('FileVersion', '$version')"
+          $metadata = $metadata -replace "StringStruct\('ProductVersion', '[^']+'\)", "StringStruct('ProductVersion', '$version')"
+          Set-Content src/build_version_info.txt $metadata -Encoding utf8NoBOM
+
+          $readme = Get-Content README.md -Raw
+          $readme = $readme -replace '(?m)^Version: `v\d+\.\d+\.\d+`$', "Version: ``$tag``"
+          Set-Content README.md $readme -Encoding utf8NoBOM
+
+          $technicalDocs = Get-Content docs/DOKUMENTATION_TECHNIK.md -Raw
+          $technicalDocs = $technicalDocs -replace '(?m)^- Aktueller Stand: `v\d+\.\d+\.\d+`\.$', "- Aktueller Stand: ``$tag``."
+          Set-Content docs/DOKUMENTATION_TECHNIK.md $technicalDocs -Encoding utf8NoBOM
+
+          $main = Get-Content src/main.py -Raw
+          $main = $main -replace 'DEFAULT_APP_VERSION = "v\d+\.\d+\.\d+"', "DEFAULT_APP_VERSION = `"$tag`""
+          Set-Content src/main.py $main -Encoding utf8NoBOM
+
+          $launcher = Get-Content src/AP1-Begleiter-Portable-starten.ps1 -Raw
+          $launcher = $launcher -replace '\$script:AppVersion = "v\d+\.\d+\.\d+"', "`$script:AppVersion = `"$tag`""
+          Set-Content src/AP1-Begleiter-Portable-starten.ps1 $launcher -Encoding utf8NoBOM
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md docs/DOKUMENTATION_TECHNIK.md src/version_info.txt src/build_version_info.txt src/main.py src/AP1-Begleiter-Portable-starten.ps1
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "Update documentation for $tag"
+            if ($LASTEXITCODE -ne 0) { throw "Dokumentations-Commit fehlgeschlagen." }
+            git push origin HEAD:main
+            if ($LASTEXITCODE -ne 0) { throw "Dokumentations-Push nach main fehlgeschlagen." }
+          }
+
+      - name: Build release package
+        shell: pwsh
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\python.exe -m pip install --upgrade pip
+          .\.venv\Scripts\python.exe -m pip install -r src/requirements.txt
+          .\src\build.ps1
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: AP1-Begleiter ${{ github.ref_name }}
+          files: release/AP1-Begleiter-Portable_${{ github.ref_name }}.zip
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+          make_latest: true
+          overwrite_files: true
