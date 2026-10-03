@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -137,22 +137,6 @@ jobs:
             Set-Content $releaseNotesPath $releaseNotes.TrimEnd() -Encoding utf8NoBOM
           }
 
-          if ($env:RELEASE_REF -eq 'refs/heads/main' -or $tagEvent) {
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add README.md docs/DOKUMENTATION_TECHNIK.md src/version_info.txt src/build_version_info.txt src/main.py src/AP1-Begleiter-Portable-starten.ps1
-            if ($tagEvent) {
-              git add $releaseNotesPath
-            }
-            git diff --cached --quiet
-            if ($LASTEXITCODE -ne 0) {
-              git commit -m "Update documentation for $tag"
-              if ($LASTEXITCODE -ne 0) { throw "Dokumentations-Commit fehlgeschlagen." }
-              git push origin HEAD:main
-              if ($LASTEXITCODE -ne 0) { throw "Dokumentations-Push nach main fehlgeschlagen." }
-            }
-          }
-
       - name: Build release package
         shell: pwsh
         run: .\src\build.ps1
@@ -160,7 +144,7 @@ jobs:
       - name: Upload release ZIP
         uses: actions/upload-artifact@v7
         with:
-          name: release-${{ github.sha }}
+          name: release-zip-${{ github.sha }}
           path: release/AP1-Begleiter-Portable_${{ steps.version.outputs.tag }}.zip
           if-no-files-found: error
           retention-days: 30
@@ -179,27 +163,95 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
+      - name: Check out main branch
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
       - name: Download release ZIP
         uses: actions/download-artifact@v8
         with:
-          name: release-${{ github.sha }}
-          path: release
+          name: release-zip-${{ github.sha }}
+          path: release-asset
 
       - name: Download release notes
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/download-artifact@v8
         with:
           name: release-notes-${{ github.sha }}
-          path: release
+          path: release-notes
+
+      - name: Update documentation and version references
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ needs.build.outputs.tag }}
+          TAG_RELEASE: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          $tag = $env:RELEASE_TAG
+          $version = $tag.Substring(1)
+          $versionTuple = "$($version.Split('.')[0]), $($version.Split('.')[1]), $($version.Split('.')[2]), 0"
+
+          Set-Content src/version_info.txt $tag -Encoding utf8NoBOM
+
+          $metadata = Get-Content src/build_version_info.txt -Raw
+          $metadata = $metadata -replace 'filevers=\([^)]+\)', "filevers=($versionTuple)"
+          $metadata = $metadata -replace 'prodvers=\([^)]+\)', "prodvers=($versionTuple)"
+          $metadata = $metadata -replace "StringStruct\('FileVersion', '[^']+'\)", "StringStruct('FileVersion', '$version')"
+          $metadata = $metadata -replace "StringStruct\('ProductVersion', '[^']+'\)", "StringStruct('ProductVersion', '$version')"
+          Set-Content src/build_version_info.txt $metadata -Encoding utf8NoBOM
+
+          $readme = Get-Content README.md -Raw
+          $readme = $readme -replace '(?m)^Version: `v\d+\.\d+\.\d+`$', "Version: ``$tag``"
+          Set-Content README.md $readme -Encoding utf8NoBOM
+
+          $technicalDocs = Get-Content docs/DOKUMENTATION_TECHNIK.md -Raw
+          $technicalDocs = $technicalDocs -replace '(?m)^- Aktueller Stand: `v\d+\.\d+\.\d+`\.$', "- Aktueller Stand: ``$tag``."
+          Set-Content docs/DOKUMENTATION_TECHNIK.md $technicalDocs -Encoding utf8NoBOM
+
+          $main = Get-Content src/main.py -Raw
+          $main = $main -replace 'DEFAULT_APP_VERSION = "v\d+\.\d+\.\d+"', "DEFAULT_APP_VERSION = `"$tag`""
+          Set-Content src/main.py $main -Encoding utf8NoBOM
+
+          $launcher = Get-Content src/AP1-Begleiter-Portable-starten.ps1 -Raw
+          $launcher = $launcher -replace '\$script:AppVersion = "v\d+\.\d+\.\d+"', "`$script:AppVersion = `"$tag`""
+          Set-Content src/AP1-Begleiter-Portable-starten.ps1 $launcher -Encoding utf8NoBOM
+
+          $filesToCommit = @(
+            "README.md",
+            "docs/DOKUMENTATION_TECHNIK.md",
+            "src/version_info.txt",
+            "src/build_version_info.txt",
+            "src/main.py",
+            "src/AP1-Begleiter-Portable-starten.ps1"
+          )
+          if ($env:TAG_RELEASE -eq 'True') {
+            $releaseNotesPath = "release/RELEASE_NOTES_$tag.md"
+            Copy-Item "release-notes/RELEASE_NOTES_$tag.md" $releaseNotesPath -Force
+            $filesToCommit += $releaseNotesPath
+          }
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add $filesToCommit
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "Update documentation for $tag"
+            if ($LASTEXITCODE -ne 0) { throw "Dokumentations-Commit fehlgeschlagen." }
+            git push origin HEAD:main
+            if ($LASTEXITCODE -ne 0) { throw "Dokumentations-Push nach main fehlgeschlagen." }
+          }
 
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.build.outputs.tag }}
           name: AP1-Begleiter ${{ needs.build.outputs.tag }}
-          files: release/AP1-Begleiter-Portable_${{ needs.build.outputs.tag }}.zip
+          files: release-asset/AP1-Begleiter-Portable_${{ needs.build.outputs.tag }}.zip
           fail_on_unmatched_files: true
           body_path: ${{ startsWith(github.ref, 'refs/tags/v') && format('release/RELEASE_NOTES_{0}.md', needs.build.outputs.tag) || '' }}
           generate_release_notes: ${{ !startsWith(github.ref, 'refs/tags/v') }}
