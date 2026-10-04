@@ -13,9 +13,10 @@
    - `docs/DOKUMENTATION_ANWENDER.md`
    - `docs/DOKUMENTATION_TECHNIK.md`
    - `docs/KURZDOKUMENTATION.txt`
-2. Für ein versioniertes Release Release Notes bereitstellen:
+2. Der Build erzeugt die versionierten Release Notes automatisch:
    - `release/RELEASE_NOTES_vX.Y.Z.md`
-   - Bei Tag-Releases ergänzt der Workflow den Download-Bereich.
+   - Die Notes enthalten Download-Links, Qualitätsstatus, Artefakte, letzte Commits und Build-Informationen.
+   - Nach dem Build können projektspezifische Änderungen ergänzt werden; für die anschließende Veröffentlichung `src/publish_release.ps1 -SkipBuild` verwenden.
 3. Für lokale Builds `src/build.ps1` ausführen.
 4. Artefakte kurz validieren:
    - `dist/AP1-Begleiter-Portable_vX.Y.Z.exe`
@@ -29,11 +30,11 @@
 
 ## Automatisierter Ablauf
 
-1. Ein Push nach `main` startet den Windows-Build. Der Workflow erhöht die Patch-Version anhand der höchsten vorhandenen Versionsnummer, aktualisiert die Versionsreferenzen und Dokumentation, erstellt das Paket und veröffentlicht ein GitHub-Release als `latest`.
-2. Ein Push eines Tags im Format `vX.Y.Z` startet denselben Build mit der Tag-Version. Dafür müssen passende Release Notes vorhanden sein; der Workflow ergänzt den Download-Bereich und veröffentlicht die Notizen samt ZIP als `latest`.
+1. Ein Push nach `main` startet den Windows-Build. Der Workflow erhöht die Patch-Version anhand der höchsten vorhandenen Versionsnummer, aktualisiert die Versionsreferenzen und Dokumentation, erstellt Paket und Release Notes, speichert die Notes in `release/` und veröffentlicht das GitHub-Release als `latest`.
+2. Ein Push eines Tags im Format `vX.Y.Z` startet denselben Build mit der Tag-Version. Der Build erzeugt die Release Notes; der Workflow speichert sie in `release/` und veröffentlicht sie samt ZIP als `latest`.
 3. Pull Requests gegen `main` führen den Build zur Validierung aus, veröffentlichen aber kein Release.
 4. Der Workflow kann außerdem über GitHub Actions manuell gestartet werden. Ein Lauf auf `main` veröffentlicht ein Release.
-5. Der Build und das Release-Publishing laufen in getrennten Jobs. Das ZIP und bei Tag-Releases die Release Notes werden zwischen den Jobs als Actions-Artefakte übertragen.
+5. Der Build und das Release-Publishing laufen in getrennten Jobs. Das ZIP und die Release Notes werden zwischen den Jobs als Actions-Artefakte übertragen.
 6. Versionsangaben in `src/version_info.txt`, `src/build_version_info.txt`, `src/main.py`, `src/AP1-Begleiter-Portable-starten.ps1`, `README.md` und `docs/DOKUMENTATION_TECHNIK.md` werden aktualisiert und nach `main` übertragen.
 
 Für lokale Veröffentlichungen kann weiterhin `src/publish_release.ps1` verwendet werden.

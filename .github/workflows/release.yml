@@ -111,32 +111,6 @@ jobs:
           $launcher = $launcher -replace '\$script:AppVersion = "v\d+\.\d+\.\d+"', "`$script:AppVersion = `"$tag`""
           Set-Content src/AP1-Begleiter-Portable-starten.ps1 $launcher -Encoding utf8NoBOM
 
-          $releaseNotesPath = "release/RELEASE_NOTES_$tag.md"
-          if ($tagEvent) {
-            if (-not (Test-Path -LiteralPath $releaseNotesPath -PathType Leaf)) {
-              throw "Release Notes nicht gefunden: $releaseNotesPath"
-            }
-            $releaseNotes = Get-Content $releaseNotesPath -Raw
-            $downloadSection = @"
-          ## Download
-
-          - [Release-Seite $tag](https://github.com/GoroTech-Tools/AP1-Begleiter/releases/tag/$tag)
-          - [ZIP direkt herunterladen](https://github.com/GoroTech-Tools/AP1-Begleiter/releases/download/$tag/AP1-Begleiter-Portable_$tag.zip)
-          "@
-            if ($releaseNotes -match '(?m)^## Download\s*$') {
-              $releaseNotes = [regex]::Replace($releaseNotes, '(?ms)^## Download\r?\n.*?(?=^## |\z)', "$downloadSection`n`n")
-            }
-            else {
-              $title = [regex]::Match($releaseNotes, '(?m)^# .+$')
-              if (-not $title.Success) {
-                throw "Release Notes enthalten keine Markdown-Überschrift: $releaseNotesPath"
-              }
-              $remainingNotes = $releaseNotes.Substring($title.Index + $title.Length).TrimStart("`r", "`n")
-              $releaseNotes = $releaseNotes.Substring(0, $title.Index + $title.Length) + "`n`n$downloadSection`n`n" + $remainingNotes
-            }
-            Set-Content $releaseNotesPath $releaseNotes.TrimEnd() -Encoding utf8NoBOM
-          }
-
       - name: Build release package
         shell: pwsh
         run: .\src\build.ps1
@@ -150,7 +124,7 @@ jobs:
           retention-days: 30
 
       - name: Upload release notes
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v7
         with:
           name: release-notes-${{ github.sha }}
@@ -180,7 +154,6 @@ jobs:
           path: release-asset
 
       - name: Download release notes
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/download-artifact@v8
         with:
           name: release-notes-${{ github.sha }}
@@ -190,7 +163,6 @@ jobs:
         shell: pwsh
         env:
           RELEASE_TAG: ${{ needs.build.outputs.tag }}
-          TAG_RELEASE: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
           $tag = $env:RELEASE_TAG
           $version = $tag.Substring(1)
@@ -229,12 +201,10 @@ jobs:
             "src/main.py",
             "src/AP1-Begleiter-Portable-starten.ps1"
           )
-          if ($env:TAG_RELEASE -eq 'True') {
-            $releaseNotesPath = "release/RELEASE_NOTES_$tag.md"
-            New-Item -ItemType Directory -Path "release" -Force | Out-Null
-            Copy-Item "release-notes/RELEASE_NOTES_$tag.md" $releaseNotesPath -Force -ErrorAction Stop
-            $filesToCommit += $releaseNotesPath
-          }
+          $releaseNotesPath = "release/RELEASE_NOTES_$tag.md"
+          New-Item -ItemType Directory -Path "release" -Force | Out-Null
+          Copy-Item "release-notes/RELEASE_NOTES_$tag.md" $releaseNotesPath -Force -ErrorAction Stop
+          $filesToCommit += $releaseNotesPath
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -254,7 +224,7 @@ jobs:
           name: AP1-Begleiter ${{ needs.build.outputs.tag }}
           files: release-asset/AP1-Begleiter-Portable_${{ needs.build.outputs.tag }}.zip
           fail_on_unmatched_files: true
-          body_path: ${{ startsWith(github.ref, 'refs/tags/v') && format('release/RELEASE_NOTES_{0}.md', needs.build.outputs.tag) || '' }}
-          generate_release_notes: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+          body_path: release/RELEASE_NOTES_${{ needs.build.outputs.tag }}.md
+          generate_release_notes: false
           make_latest: true
           overwrite_files: true
