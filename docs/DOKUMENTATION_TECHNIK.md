@@ -38,5 +38,6 @@ Vor dem eigentlichen Build prüft das Skript verbindlich:
 
 - Laufzeitversion kommt aus `src/version_info.txt`.
 - EXE-Metadaten kommen aus `src/build_version_info.txt`.
-- Aktueller Stand: `v1.0.4`.
+- Aktueller Stand: `v1.0.5`.
+
 
