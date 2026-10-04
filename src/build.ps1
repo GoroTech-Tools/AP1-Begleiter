@@ -64,6 +64,107 @@ $RequiredUppercaseDocs = @(
     "DOKUMENTATION_TECHNIK.md"
 )
 
+function New-ReleaseNotesFile {
+    param(
+        [string]$Version,
+        [string]$BuildDirName,
+        [string]$DistExeName,
+        [string]$ReleaseDir,
+        [string]$ZipFileName
+    )
+
+    $notesPath = Join-Path $ReleaseDir ("RELEASE_NOTES_{0}.md" -f $Version)
+    $buildDate = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    $displayDate = (Get-Date).ToString("yyyy-MM-dd")
+    $releaseUrl = "https://github.com/GoroTech-Tools/AP1-Begleiter/releases/tag/$Version"
+    $zipDownloadUrl = if ($ZipFileName) {
+        "https://github.com/GoroTech-Tools/AP1-Begleiter/releases/download/$Version/$ZipFileName"
+    }
+    else {
+        $null
+    }
+    $zipArtifactLine = if ($ZipFileName) {
+        "- Release-ZIP: release/$ZipFileName"
+    }
+    else {
+        "- Release-ZIP: *(in diesem Lauf nicht erstellt)*"
+    }
+    $qualityZipLine = if ($ZipFileName) {
+        "- ZIP-Artefakt im Release-Ordner erstellt."
+    }
+    else {
+        "- ZIP-Artefakt in diesem Lauf nicht erstellt (`-SkipZip`)."
+    }
+
+    $recentCommits = @()
+    try {
+        foreach ($entry in (git log --oneline --no-decorate -5 2>$null)) {
+            if ([string]::IsNullOrWhiteSpace($entry)) {
+                continue
+            }
+
+            $parts = $entry -split " ", 2
+            if ($parts.Count -eq 2) {
+                $recentCommits += "- ``$($parts[0])`` $($parts[1])"
+            }
+            else {
+                $recentCommits += "- $entry"
+            }
+        }
+    }
+    catch {
+    }
+
+    if (-not $recentCommits -or $recentCommits.Count -eq 0) {
+        $recentCommits = @("- *(Commitliste konnte automatisch nicht ermittelt werden.)*")
+    }
+
+    $contentLines = @(
+        "# Release Notes $Version",
+        "",
+        "Datum: $displayDate",
+        "",
+        "## Download",
+        "",
+        "- [Release-Seite $Version]($releaseUrl)",
+        $(if ($zipDownloadUrl) { "- [ZIP direkt herunterladen]($zipDownloadUrl)" } else { "- ZIP-Direktdownload wird nach der ZIP-Erstellung ergänzt." }),
+        "",
+        "## Änderungen",
+        "",
+        "- Build, Paketierung und Dokumentation für $Version erstellt.",
+        "- Bitte projektspezifische Änderungen bei Bedarf ergänzen.",
+        "",
+        "## Qualitätsstatus",
+        "",
+        "- Release-Build erfolgreich erzeugt.",
+        "$qualityZipLine",
+        "- Automatische Basisprüfung (Build/Packaging) im Skript durchlaufen.",
+        "",
+        "## Artefakte",
+        "",
+        "- Release-Verzeichnis: release/$BuildDirName/",
+        "- EXE: dist/$DistExeName",
+        "$zipArtifactLine",
+        "",
+        "## Enthaltene Commits (aktuelle Historie)",
+        ""
+    )
+
+    $contentLines += $recentCommits
+    $contentLines += @(
+        "",
+        "## Technische Build-Informationen",
+        "",
+        "- Build-Datum: $buildDate",
+        "- Build-Modus: --onefile --windowed",
+        "- EXE-Name: AP1-Begleiter-Portable.exe"
+    )
+
+    Set-Content -Path $notesPath -Value ($contentLines -join "`r`n") -Encoding utf8NoBOM
+    Write-Host "Release Notes erstellt/aktualisiert: $notesPath" -ForegroundColor Green
+    return $notesPath
+}
+
 Write-Host "`nAP1-Begleiter-Portable - Build" -ForegroundColor Green
 Write-Host "======================`n" -ForegroundColor Green
 Write-Host "Version: $versionTag" -ForegroundColor DarkGray
@@ -185,18 +286,19 @@ $releaseDoc = Join-Path $releasePackageDir "KURZDOKUMENTATION.txt"
 Copy-Item $DocPath $releaseDoc -Force
 Write-Host "2b. Kurzdokumentation kopiert: $releaseDoc" -ForegroundColor Green
 
-if (Test-Path -Path $ReleaseNotesPath -PathType Leaf) {
-    $releaseNotesTarget = Join-Path $releasePackageDir (Split-Path $ReleaseNotesPath -Leaf)
-    Copy-Item $ReleaseNotesPath $releaseNotesTarget -Force
-    Write-Host "2c. Release Notes kopiert: $releaseNotesTarget" -ForegroundColor Green
-}
-else {
-    Write-Host "2c. Hinweis: Keine Release Notes gefunden unter $ReleaseNotesPath" -ForegroundColor Yellow
-}
+$zipName = "{0}.zip" -f (Split-Path $releasePackageDir -Leaf)
+$releaseNotesPath = New-ReleaseNotesFile `
+    -Version $versionTag `
+    -BuildDirName (Split-Path $releasePackageDir -Leaf) `
+    -DistExeName (Split-Path $VersionedDistExePath -Leaf) `
+    -ReleaseDir $ReleaseDir `
+    -ZipFileName $(if ($SkipZip) { $null } else { $zipName })
+$releaseNotesTarget = Join-Path $releasePackageDir (Split-Path $releaseNotesPath -Leaf)
+Copy-Item $releaseNotesPath $releaseNotesTarget -Force
+Write-Host "2c. Release Notes kopiert: $releaseNotesTarget" -ForegroundColor Green
 
 # --- Schritt 4: ZIP (optional) ---
 if (-not $SkipZip) {
-    $zipName = "{0}.zip" -f (Split-Path $releasePackageDir -Leaf)
     $zipPath = Join-Path $ReleaseDir $zipName
     Compress-Archive -Path $releasePackageDir -DestinationPath $zipPath -Force
     Write-Host "3. ZIP des Release-Ordners erstellt: $zipPath" -ForegroundColor Green
