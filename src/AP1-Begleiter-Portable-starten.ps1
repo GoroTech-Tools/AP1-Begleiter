@@ -40,7 +40,7 @@ public static class WinAPI {
 $script:DefaultProfiles = [ordered]@{
     "Standard" = @{
         Url1 = "https://share.eu.articulate.com/aDHiswIhkQ5QP2-VZR9Qy"
-        Url2 = "https://share.eu.articulate.com/R-XBM_yDnkWKgzzDy1gAm"
+        Url2 = "https://gorotech489.sharepoint.com/sites/zusammen/pruefung/ap1/SitePages/Start.aspx"
     }
 }
 
