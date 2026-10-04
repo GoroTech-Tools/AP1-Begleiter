@@ -20,7 +20,7 @@ Der Build erfolgt über `src/build.ps1` und erzeugt:
 - `dist/AP1-Begleiter-Portable_vX.Y.Z.exe`
 - `release/AP1-Begleiter-Portable_vX.Y.Z/`
 - `release/AP1-Begleiter-Portable_vX.Y.Z.zip`
-- `release/RELEASE_NOTES_vX.Y.Z.md` wird (falls vorhanden) ins Release-Paket kopiert.
+- `release/RELEASE_NOTES_vX.Y.Z.md` wird beim Build erzeugt und ins Release-Paket kopiert.
 
 Veröffentlichung auf GitHub erfolgt über `src/publish_release_core.ps1`.
 
@@ -39,5 +39,4 @@ Vor dem eigentlichen Build prüft das Skript verbindlich:
 - Laufzeitversion kommt aus `src/version_info.txt`.
 - EXE-Metadaten kommen aus `src/build_version_info.txt`.
 - Aktueller Stand: `v1.0.4`.
-
 
